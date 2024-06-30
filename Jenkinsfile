@@ -40,9 +40,7 @@ pipeline {
                     def ecrRepoUri = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}"
                     
                     // Get ECR login command using AWS CLI and credentials
-                    def loginCmd = sh(script: "/usr/local/bin/aws ecr get-login-password --region ${AWS_REGION}", returnStdout: true).trim()
-    
-                    // Login to ECR with AWS credentials
+                    def loginCmd = ""
                     withCredentials([
                         [
                             $class: 'AmazonWebServicesCredentialsBinding',
@@ -51,12 +49,15 @@ pipeline {
                             secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
                         ]
                     ]) {
-                        // Login to ECR
-                        sh "echo '${loginCmd}' | docker login --username AWS --password-stdin ${ecrRepoUri}"
-                        
-                        // Push Docker image to ECR
-                        sh "docker push ${ecrRepoUri}:${IMAGE_TAG}"
+                        // Obtain the ECR login command
+                        loginCmd = sh(script: "/usr/local/bin/aws ecr get-login-password --region ${AWS_REGION}", returnStdout: true).trim()
                     }
+
+                    // Login to ECR with AWS credentials
+                    sh "echo '${loginCmd}' | docker login --username AWS --password-stdin ${ecrRepoUri}"
+                    
+                    // Push Docker image to ECR
+                    sh "docker push ${ecrRepoUri}:${IMAGE_TAG}"
                 }
             }
         }
