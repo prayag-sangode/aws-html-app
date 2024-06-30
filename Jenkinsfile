@@ -41,12 +41,22 @@ pipeline {
                     
                     // Get ECR login command using AWS CLI and credentials
                     def loginCmd = sh(script: "/usr/local/bin/aws ecr get-login-password --region ${AWS_REGION}", returnStdout: true).trim()
-
+    
                     // Login to ECR with AWS credentials
-                    sh "echo '${loginCmd}' | docker login --username AWS --password-stdin ${ecrRepoUri}"
-                    
-                    // Push Docker image to ECR
-                    sh "docker push ${ecrRepoUri}:${IMAGE_TAG}"
+                    withCredentials([
+                        [
+                            $class: 'AmazonWebServicesCredentialsBinding',
+                            credentialsId: AWS_CREDENTIALS_ID,
+                            accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                        ]
+                    ]) {
+                        // Login to ECR
+                        sh "echo '${loginCmd}' | docker login --username AWS --password-stdin ${ecrRepoUri}"
+                        
+                        // Push Docker image to ECR
+                        sh "docker push ${ecrRepoUri}:${IMAGE_TAG}"
+                    }
                 }
             }
         }
@@ -67,11 +77,13 @@ pipeline {
         stage('Deploy to EKS') {
             steps {
                 script {
-                    // Update kubeconfig for your EKS cluster using stored AWS credentials
-                    withCredentials([aws(credentialsId: AWS_CREDENTIALS_ID, region: 'us-east-1')]) {
-                        sh 'aws eks update-kubeconfig --name my-cluster'
-                        sh 'kubectl apply -f deployment.yaml'
-                    }
+                    def ecrRepoUri = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}"
+                    
+                    // Assuming you have configured kubeconfig and kubectl on Jenkins
+                    sh """
+                    aws eks update-kubeconfig --region ${AWS_REGION} --name my-cluster
+                    kubectl apply -f deployment.yaml
+                    """
                 }
             }
         }
