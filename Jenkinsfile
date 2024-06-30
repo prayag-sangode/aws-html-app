@@ -6,7 +6,7 @@ pipeline {
         AWS_ACCOUNT_ID = '058264559032' // Replace with your actual AWS account ID
         ECR_REPO_NAME = 'aws-html-app'
         IMAGE_TAG = 'latest'
-        AWS_CREDENTIALS_ID = 'aws-access-key-id' // Replace with your Jenkins credentials ID
+        AWS_CREDENTIALS_ID = 'aws-id' // Replace with your Jenkins credentials ID
     }
     
     stages {
