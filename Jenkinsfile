@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     environment {
+        GITHUB_PAT_CREDENTIAL_ID = 'github-pat'
         AWS_REGION = 'us-east-1'
         AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
         AWS_SECRET_ACCESS_KEY = credentials('aws-secret-key-id')
@@ -16,7 +17,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/prayag-sangode/aws-html-app.git'
+                // Use HTTPS URL with Personal Access Token for Git checkout
+                git credentialsId: "${GITHUB_PAT_CREDENTIAL_ID}", url: 'https://github.com/prayag-sangode/aws-html-app.git'
             }
         }
 
