@@ -81,6 +81,7 @@ pipeline {
                     // Update kubeconfig for your EKS cluster using stored AWS credentials
                     withCredentials([aws(credentialsId: AWS_CREDENTIALS_ID, region: 'us-east-1')]) {
                         sh 'aws eks update-kubeconfig --name my-cluster'
+                        sh 'kubectl get nodes'
                         sh 'kubectl apply -f deployment.yaml'
                     }
                 }
