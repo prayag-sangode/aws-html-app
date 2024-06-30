@@ -28,8 +28,11 @@ pipeline {
         stage('Verify AWS CLI') {
             steps {
                 script {
-                    // Check AWS CLI version
-                    sh "aws --version"
+                    // Check AWS key
+                    sh "echo $AWS_ACCESS_KEY_ID"
+
+                    // Check AWS secret
+                    sh "echo $AWS_SECRET_ACCESS_KEY"
 
                     // List S3 buckets (example command)
                     sh "aws s3 ls"
