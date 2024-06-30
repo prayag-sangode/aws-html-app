@@ -11,6 +11,8 @@ pipeline {
         ECR_REPO_NAME = "aws-html-app"
         IMAGE_TAG = "latest"
         APP_NAME = "aws-html-app"
+        REPO_URL = "https://github.com/prayag-sangode/aws-html-app.git"
+        BRANCH = "main"  // Replace with the desired branch
     }
 
     stages {
