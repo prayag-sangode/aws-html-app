@@ -25,6 +25,21 @@ pipeline {
             }
         }
 
+        stage('Verify AWS CLI') {
+            steps {
+                script {
+                    // Check AWS CLI version
+                    sh "aws --version"
+
+                    // List S3 buckets (example command)
+                    sh "aws s3 ls"
+
+                    // Describe EC2 instances (example command)
+                    sh "aws ec2 describe-instances --region ${AWS_REGION}"
+                }
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
