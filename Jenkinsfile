@@ -1,3 +1,5 @@
+def AWS_CREDENTIALS_ID = 'aws-id'
+
 pipeline {
     agent any
     
@@ -6,7 +8,6 @@ pipeline {
         AWS_ACCOUNT_ID = '058264559032' // Replace with your actual AWS account ID
         ECR_REPO_NAME = 'aws-html-app'
         IMAGE_TAG = 'latest'
-        AWS_CREDENTIALS_ID = 'aws-id' // Replace with your Jenkins credentials ID
     }
     
     stages {
@@ -39,9 +40,7 @@ pipeline {
                     def ecrRepoUri = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}"
                     
                     // Get ECR login command using AWS CLI and credentials
-                    def loginCmd = sh(script: "/usr/local/bin/aws ecr get-login-password --region ${AWS_REGION}", returnStdout: true).trim()
-
-                    // Login to ECR
+                    def loginCmd = ""
                     withCredentials([
                         [
                             $class: 'AmazonWebServicesCredentialsBinding',
@@ -50,8 +49,12 @@ pipeline {
                             secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
                         ]
                     ]) {
-                        sh "echo '${loginCmd}' | docker login --username AWS --password-stdin ${ecrRepoUri}"
+                        // Obtain the ECR login command
+                        loginCmd = sh(script: "/usr/local/bin/aws ecr get-login-password --region ${AWS_REGION}", returnStdout: true).trim()
                     }
+
+                    // Login to ECR with AWS credentials
+                    sh "echo '${loginCmd}' | docker login --username AWS --password-stdin ${ecrRepoUri}"
                     
                     // Push Docker image to ECR
                     sh "docker push ${ecrRepoUri}:${IMAGE_TAG}"
@@ -63,7 +66,7 @@ pipeline {
             steps {
                 script {
                     def ecrRepoUri = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}"
-
+    
                     // Update the deployment file with the new image tag
                     sh """
                     sed -i 's#image: .*#image: ${ecrRepoUri}:${IMAGE_TAG}#' deployment.yaml
