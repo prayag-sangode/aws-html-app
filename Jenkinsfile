@@ -28,6 +28,12 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
+                    // export keys
+                    sh "export ${AWS_ACCESS_KEY_ID}"
+                    sh "export ${AWS_SECRET_ACCESS_KEY}"
+                    sh "cat ${AWS_ACCESS_KEY_ID}"
+                    sh "cat ${AWS_SECRET_ACCESS_KEY}"
+
                     def ecrRepoUri = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}"
                     
                     // Build Docker image
