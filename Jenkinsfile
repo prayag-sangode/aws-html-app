@@ -84,7 +84,7 @@ pipeline {
                     withCredentials([aws(credentialsId: AWS_CREDENTIALS_ID, region: 'us-east-1')]) {
                         sh 'aws eks update-kubeconfig --name my-cluster'
                         sh 'kubectl get nodes'
-                        cat deployment.yaml
+                        sh 'cat deployment.yaml'
                         sh 'kubectl apply -f deployment.yaml'
                     }
                 }
