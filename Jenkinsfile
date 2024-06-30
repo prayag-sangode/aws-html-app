@@ -78,13 +78,11 @@ pipeline {
         stage('Deploy to EKS') {
             steps {
                 script {
-                    def ecrRepoUri = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}"
-                    
-                    // Assuming you have configured kubeconfig and kubectl on Jenkins
-                    sh """
-                    aws eks update-kubeconfig --region ${AWS_REGION} --name my-cluster
-                    kubectl apply -f deployment.yaml
-                    """
+                    // Update kubeconfig for your EKS cluster using stored AWS credentials
+                    withCredentials([aws(credentialsId: AWS_CREDENTIALS_ID, region: 'us-east-1')]) {
+                        sh 'aws eks update-kubeconfig --name my-cluster'
+                        sh 'kubectl apply -f deployment.yaml'
+                    }
                 }
             }
         }
