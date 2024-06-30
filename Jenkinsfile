@@ -4,6 +4,8 @@ pipeline {
     environment {
         AWS_REGION = 'us-east-1'
         AWS_ACCOUNT_ID = '058264559032' // Replace with your actual AWS account ID
+        AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
+        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-key-id')
         EKS_CLUSTER_NAME = 'my-cluster'
         DEPLOYMENT_FILE = 'deployment.yaml' // Ensure this file is in your repository
         ECR_REPO_NAME = "aws-html-app"
