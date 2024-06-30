@@ -1,0 +1,16 @@
+steps:
+  # Build step
+  - name: 'alpine'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - 'echo This is the build step'
+
+  # Deploy step
+  - name: 'alpine'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - 'echo This is the deploy step'
+
+timeout: '600s'
