@@ -70,6 +70,7 @@ pipeline {
                     // Update the deployment file with the new image tag
                     sh """
                     sed -i 's#image: .*#image: ${ecrRepoUri}:${IMAGE_TAG}#' deployment.yaml
+                    sed -i 's#APP_NAME: .*#APP_NAME: \${ECR_REPO_NAME}#' deployment.yaml                    
                     """
                 }
             }
