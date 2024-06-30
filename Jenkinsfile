@@ -40,18 +40,7 @@ pipeline {
                     def ecrRepoUri = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}"
                     
                     // Get ECR login command using AWS CLI and credentials
-                    def loginCmd = ""
-                    withCredentials([
-                        [
-                            $class: 'AmazonWebServicesCredentialsBinding',
-                            credentialsId: AWS_CREDENTIALS_ID,
-                            accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                        ]
-                    ]) {
-                        // Obtain the ECR login command
-                        loginCmd = sh(script: "/usr/local/bin/aws ecr get-login-password --region ${AWS_REGION}", returnStdout: true).trim()
-                    }
+                    def loginCmd = sh(script: "/usr/local/bin/aws ecr get-login-password --region ${AWS_REGION}", returnStdout: true).trim()
 
                     // Login to ECR with AWS credentials
                     sh "echo '${loginCmd}' | docker login --username AWS --password-stdin ${ecrRepoUri}"
@@ -79,9 +68,9 @@ pipeline {
             steps {
                 script {
                     // Update kubeconfig for your EKS cluster using stored AWS credentials
-                    withCredentials([aws(credentialsId: 'your-aws-credentials-id', region: 'us-east-1')]) {
+                    withCredentials([aws(credentialsId: AWS_CREDENTIALS_ID, region: 'us-east-1')]) {
                         sh 'aws eks update-kubeconfig --name my-cluster'
-                        sh 'kubectl get nodes'
+                        sh 'kubectl apply -f deployment.yaml'
                     }
                 }
             }
