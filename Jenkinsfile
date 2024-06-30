@@ -19,9 +19,8 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 script {
-                        // Clone the Git repository using GitHub credentials
-                        git credentialsId: 'github-pat', url: REPO_URL, branch: BRANCH
-                    }
+                    // Clone the Git repository using GitHub credentials
+                    git credentialsId: 'github-pat', url: "${REPO_URL}", branch: "${BRANCH}"
                 }
             }
         }
@@ -61,8 +60,8 @@ pipeline {
 
                     // Update the deployment file with the new image tag
                     sh """
-                    sed -i 's#image: .*\$#image: ${ecrRepoUri}:${IMAGE_TAG}#' ${DEPLOYMENT_FILE}
-                    sed -i 's#APP_NAME: .*\${APP_NAME}#' ${DEPLOYMENT_FILE}
+                    sed -i 's#image: .*#image: ${ecrRepoUri}:${IMAGE_TAG}#' ${DEPLOYMENT_FILE}
+                    sed -i 's#APP_NAME: .*#APP_NAME: ${APP_NAME}#' ${DEPLOYMENT_FILE}
                     cat ${DEPLOYMENT_FILE} # For debugging, to see the updated file
                     """
                 }
@@ -72,7 +71,7 @@ pipeline {
         stage('Deploy to EKS') {
             steps {
                 script {
-                    withAWS(credentials: "aws-access-key-id", region: AWS_REGION) {
+                    withAWS(credentials: "${AWS_ACCESS_KEY_ID},${AWS_SECRET_ACCESS_KEY}", region: AWS_REGION) {
                         // Update Kubernetes deployment and service to use the new image
                         sh """
                         aws eks update-kubeconfig --region ${AWS_REGION} --name ${EKS_CLUSTER_NAME}
