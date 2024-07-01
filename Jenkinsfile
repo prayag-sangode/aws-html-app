@@ -16,7 +16,7 @@ pipeline {
             steps {
                 script {
                     // Clone the Git repository using GitHub credentials
-                    git credentialsId: 'github-pat', url: '${GIT_REPO_NAME}', branch: 'main'
+                    git credentialsId: 'github-pat', url: "${GIT_REPO_NAME}", branch: 'main'
                 }
             }
         }
