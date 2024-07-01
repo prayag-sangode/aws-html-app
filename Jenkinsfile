@@ -6,7 +6,8 @@ pipeline {
     environment {
         AWS_REGION = 'us-east-1'
         AWS_ACCOUNT_ID = '058264559032' // Replace with your actual AWS account ID
-        ECR_REPO_NAME = 'aws-html-app'
+        ECR_REPO_NAME = 'myhtml-app'
+        GIT_REPO_NAME = 'https://github.com/prayag-sangode/aws-html-app.git'
         IMAGE_TAG = 'latest'
     }
     
@@ -15,7 +16,7 @@ pipeline {
             steps {
                 script {
                     // Clone the Git repository using GitHub credentials
-                    git credentialsId: 'github-pat', url: 'https://github.com/prayag-sangode/aws-html-app.git', branch: 'main'
+                    git credentialsId: 'github-pat', url: '${GIT_REPO_NAME}', branch: 'main'
                 }
             }
         }
