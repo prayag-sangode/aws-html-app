@@ -131,12 +131,12 @@ resource "aws_iam_role_policy_attachment" "eks_node_AmazonEC2ContainerRegistryRe
   role       = aws_iam_role.eks_node.name
 }
 
-resource "aws_eks_addon" "ebs_csi_addon" {
-  cluster_name = aws_eks_cluster.my_cluster.name
-  addon_name   = "aws-ebs-csi-driver"
-  addon_version            = "v1.32.0-eksbuild.1"
-  depends_on = [aws_eks_cluster.my_cluster]
-}
+#resource "aws_eks_addon" "ebs_csi_addon" {
+#  cluster_name = aws_eks_cluster.my_cluster.name
+#  addon_name   = "aws-ebs-csi-driver"
+#  addon_version            = "v1.32.0-eksbuild.1"
+#  depends_on = [aws_eks_cluster.my_cluster]
+#}
 
 
 
