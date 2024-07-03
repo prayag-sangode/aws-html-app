@@ -7,6 +7,7 @@ pipeline {
         AWS_REGION = 'us-east-1'
         AWS_ACCOUNT_ID = '058264559032' // Replace with your actual AWS account ID
         ECR_REPO_NAME = 'myhtml-app'
+        APP_NAME = 'myhtml-app'
         GIT_REPO_NAME = 'https://github.com/prayag-sangode/myhtml-app.git'
         IMAGE_TAG = 'latest'
         AWS_CREDENTIALS_ID = 'aws-id'
@@ -72,7 +73,7 @@ pipeline {
                     // Update the deployment file with the new image tag
                     sh """
                     sed -i 's#image: .*#image: ${ecrRepoUri}:${IMAGE_TAG}#' deployment.yaml
-                    sed -i "s#APP_NAME#${ECR_REPO_NAME}#" deployment.yaml
+                    sed -i "s#APP_NAME#${APP_NAME}#" deployment.yaml
                     cat deployment.yaml
                     """
                 }
