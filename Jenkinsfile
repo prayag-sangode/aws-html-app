@@ -9,6 +9,7 @@ pipeline {
         ECR_REPO_NAME = 'myhtml-app'
         GIT_REPO_NAME = 'https://github.com/prayag-sangode/myhtml-app.git'
         IMAGE_TAG = 'latest'
+        AWS_CREDENTIALS_ID = 'aws-id'
     }
     
     stages {
