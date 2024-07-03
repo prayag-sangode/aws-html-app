@@ -20,7 +20,7 @@ data "aws_security_group" "default" {
 }
 
 resource "aws_ecr_repository" "my_ecr_repo" {
-  name = "aws-html-app"  # Replace with your desired repository name
+  name = "myhtml-app"  # Replace with your desired repository name
   force_delete = true
 }
 
