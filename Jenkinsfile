@@ -7,7 +7,7 @@ pipeline {
         AWS_REGION = 'us-east-1'
         AWS_ACCOUNT_ID = '058264559032' // Replace with your actual AWS account ID
         ECR_REPO_NAME = 'myhtml-app'
-        GIT_REPO_NAME = 'https://github.com/prayag-sangode/aws-html-app.git'
+        GIT_REPO_NAME = 'https://github.com/prayag-sangode/myhtml-app.git'
         IMAGE_TAG = 'latest'
     }
     
