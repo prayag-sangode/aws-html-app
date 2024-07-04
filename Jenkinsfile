@@ -89,6 +89,7 @@ pipeline {
                         sh 'kubectl get nodes'
                         sh 'cat deployment.yaml'
                         sh 'kubectl apply -f deployment.yaml'
+                        sh 'kubectl rollout restart deploy ${APP_NAME}'
                     }
                 }
             }
