@@ -1,27 +1,39 @@
 version: 0.2
 
-phases:
-  install:
-    runtime-versions:
-      docker: 20
+env:
+  variables:
+    AWS_REGION: us-east-1
+    ECR_REGISTRY: 058264559032.dkr.ecr.us-east-1.amazonaws.com
+    IMAGE_NAME: my-html-app
+    IMAGE_TAG: latest
+    APP_NAME: my-html-app
+    CLUSTER_NAME: my-cluster
 
-  pre_build:
+phases:
+  build:
     commands:
       - echo Logging in to Amazon ECR...
       - $(aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY)
       - echo Building the Docker image...
       - docker build -t $IMAGE_NAME .
-
-  build:
-    commands:
+      - echo Updating kubeconfig for EKS cluster...
+      - aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_REGION
       - echo Tagging the Docker image...
       - docker tag $IMAGE_NAME:latest $ECR_REGISTRY/$IMAGE_NAME:latest
+      - echo Updating deployment.yaml...
+      - sed -i 's#image: .*#image: ${ECR_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}#' deployment.yaml
+      - sed -i "s#APP_NAME#${APP_NAME}#" deployment.yaml
 
-  post_build:
+  push:
     commands:
       - echo Pushing the Docker image to Amazon ECR...
       - docker push $ECR_REGISTRY/$IMAGE_NAME:latest
-      - echo Deploying to EKS...
+
+  deploy:
+    commands:
+      - echo Checking nodes in EKS cluster...
+      - kubectl get nodes
+      - echo Applying deployment.yaml to EKS...
       - kubectl apply -f deployment.yaml
 
 artifacts:
