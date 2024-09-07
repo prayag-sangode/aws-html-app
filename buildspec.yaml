@@ -24,6 +24,10 @@ phases:
       - echo Tagging the Docker image...
       - docker tag $IMAGE_NAME:latest $ECR_REGISTRY/$IMAGE_NAME:latest
       - echo Updating deployment.yaml...
+      - export $AWS_ACCESS_KEY_ID
+      - export $AWS_SECRET_ACCESS_KEY
+      - echo $AWS_ACCESS_KEY_ID
+      - echo $AWS_SECRET_ACCESS_KEY
 
   build:
     commands:
