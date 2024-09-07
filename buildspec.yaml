@@ -8,14 +8,12 @@ env:
     IMAGE_TAG: latest
     APP_NAME: my-html-app
     CLUSTER_NAME: my-cluster
-    AWS_ACCOUNT_NUMBER: 058264559032
-    AWS_DEFAULT_REGION: us-east-1
 
 phases:
   install:
     commands:
       - echo Logging in to Amazon ECR...
-      - $(aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY)
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
 
   pre_build:
     commands:
@@ -24,10 +22,8 @@ phases:
       - echo Tagging the Docker image...
       - docker tag $IMAGE_NAME:latest $ECR_REGISTRY/$IMAGE_NAME:latest
       - echo Updating deployment.yaml...
-      - export $AWS_ACCESS_KEY_ID
-      - export $AWS_SECRET_ACCESS_KEY
-      - echo $AWS_ACCESS_KEY_ID
-      - echo $AWS_SECRET_ACCESS_KEY
+      - sed -i -e 's#image: .*#image: '"$ECR_REGISTRY"'/'"$IMAGE_NAME"':'"$IMAGE_TAG"'#' deployment.yaml
+      - sed -i -e 's#APP_NAME#'"$APP_NAME"'#' deployment.yaml
 
   build:
     commands:
