@@ -53,7 +53,7 @@ resource "aws_iam_policy" "codebuild_policy" {
         Action = [
           "eks:DescribeCluster"
         ],
-        Resource = "arn:aws:eks:us-east-1:123456789012:cluster/my-cluster" # Replace with your EKS cluster ARN
+        Resource = "arn:aws:eks:us-east-1:058264559032:cluster/my-cluster" # Replace with your EKS cluster ARN
       },
       {
         Effect = "Allow",
