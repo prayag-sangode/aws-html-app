@@ -3,8 +3,8 @@ resources:
   - name: myHTMLApp
     type: KubernetesService
     properties:
-      serviceName: my-html-service
-      clusterName: my-eks-cluster
+      serviceName: $SERVICE_NAME
+      clusterName: $CLUSTER_NAME
       imageFile:
         type: ECR
         location: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
