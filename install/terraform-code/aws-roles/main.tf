@@ -22,7 +22,7 @@ resource "aws_iam_role" "codebuild_role" {
 # IAM Policy for CodeBuild
 resource "aws_iam_policy" "codebuild_policy" {
   name        = "CodeBuildPolicy"
-  description = "Policy for CodeBuild Docker operations"
+  description = "Policy for CodeBuild operations"
   policy      = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -58,9 +58,10 @@ resource "aws_iam_policy" "codebuild_policy" {
       {
         Effect = "Allow",
         Action = [
-          "s3:GetObject"
+          "s3:GetObject",
+          "s3:PutObject"
         ],
-        Resource = "arn:aws:s3:::codepipeline-us-east-1-35331292553/MyHTMLAppPipeLine/SourceArti/*" # Replace with your S3 bucket ARN and path
+        Resource = "arn:aws:s3:::codepipeline-us-east-1-35331292553/MyHTMLAppPipeLine/*" # Replace with your S3 bucket ARN and path
       }
     ]
   })
