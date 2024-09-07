@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "us-east-1"
+  region = "us-east-1" # Replace with your desired AWS region
 }
 
 # IAM Role for CodeBuild
@@ -22,7 +22,7 @@ resource "aws_iam_role" "codebuild_role" {
 # IAM Policy for CodeBuild
 resource "aws_iam_policy" "codebuild_policy" {
   name        = "CodeBuildPolicy"
-  description = "Policy for CodeBuild Docker operations"
+  description = "Policy for CodeBuild operations"
   policy      = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -37,7 +37,7 @@ resource "aws_iam_policy" "codebuild_policy" {
           "ecr:BatchCheckLayerAvailability",
           "ecr:BatchGetImage"
         ],
-        Resource = "arn:aws:ecr:us-east-1:123456789012:repository/repository-name"
+        Resource = "arn:aws:ecr:us-east-1:123456789012:repository/repository-name" # Replace with your ECR repository ARN
       },
       {
         Effect = "Allow",
@@ -55,6 +55,19 @@ resource "aws_iam_policy" "codebuild_policy" {
           "eks:ListClusters"
         ],
         Resource = "*"
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:ListBucket",
+          "s3:DeleteObject"
+        ],
+        Resource = [
+          "arn:aws:s3:::codepipeline-us-east-1-35331292553/MyHTMLAppPipeLine/*", # Replace with your S3 bucket path
+          "arn:aws:s3:::codepipeline-us-east-1-35331292553/MyHTMLAppPipeLine" # Replace with your S3 bucket path
+        ]
       }
     ]
   })
