@@ -22,8 +22,6 @@ phases:
       - echo Tagging the Docker image...
       - docker tag $IMAGE_NAME:latest $ECR_REGISTRY/$IMAGE_NAME:latest
       - echo Updating deployment.yaml...
-      - sed -i -e 's#image: .*#image: '"$ECR_REGISTRY"'/'"$IMAGE_NAME"':'"$IMAGE_TAG"'#' deployment.yaml
-      - sed -i -e 's#APP_NAME#'"$APP_NAME"'#' deployment.yaml
 
   build:
     commands:
