@@ -4,11 +4,6 @@ phases:
   install:
     commands:
       - echo "Installing dependencies"
-      - curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/${KUBECTL_VERSION}/2022-11-21/bin/linux/amd64/kubectl
-      - chmod +x ./kubectl
-      - mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$HOME/bin:$PATH
-      - echo "kubectl installed: $(kubectl version --client)"
-      - aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $EKS_CLUSTER_NAME
   pre_build:
     commands:
       - echo "Logging into Amazon ECR"
@@ -23,9 +18,12 @@ phases:
     commands:
       - echo "Pushing the Docker image to ECR"
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
-      - echo "Updating Kubernetes resources"
-      - sed -i "s|IMAGE_PLACEHOLDER|$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest|" manifest/deployment.yaml
-      - kubectl apply -f manifest/deployment.yaml
+      - echo "Image pushed to ECR"
+      - echo "Updating deployment.yaml with new image URI"
+      - sed -i "s|IMAGE_PLACEHOLDER|$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest|g" manifest/deployment.yaml
+      - echo "Deploying to Kubernetes"
+      - kubectl apply -f manifest/deployment.yaml --namespace $KUBERNETES_NAMESPACE
+
 artifacts:
   files:
     - '**/*'
