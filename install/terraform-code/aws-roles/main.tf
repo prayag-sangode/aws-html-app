@@ -54,6 +54,13 @@ resource "aws_iam_policy" "codebuild_policy" {
           "eks:DescribeCluster"
         ],
         Resource = "arn:aws:eks:us-east-1:123456789012:cluster/my-cluster" # Replace with your EKS cluster ARN
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:GetObject"
+        ],
+        Resource = "arn:aws:s3:::codepipeline-us-east-1-35331292553/MyHTMLAppPipeLine/SourceArti/*" # Replace with your S3 bucket ARN and path
       }
     ]
   })
