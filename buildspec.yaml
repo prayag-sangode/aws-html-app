@@ -10,22 +10,25 @@ env:
     CLUSTER_NAME: my-cluster
 
 phases:
-  build:
+  install:
     commands:
       - echo Logging in to Amazon ECR...
       - $(aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY)
+
+  build:
+    commands:
       - echo Building the Docker image...
       - docker build -t $IMAGE_NAME .
-      - echo Updating kubeconfig for EKS cluster...
-      - aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_REGION
       - echo Tagging the Docker image...
       - docker tag $IMAGE_NAME:latest $ECR_REGISTRY/$IMAGE_NAME:latest
       - echo Updating deployment.yaml...
-      - sed -i 's#image: .*#image: ${ECR_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}#' deployment.yaml
+      - sed -i "s#image: .*#image: ${ECR_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}#" deployment.yaml
       - sed -i "s#APP_NAME#${APP_NAME}#" deployment.yaml
 
-  push:
+  post_build:
     commands:
+      - echo Updating kubeconfig for EKS cluster...
+      - aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_REGION
       - echo Pushing the Docker image to Amazon ECR...
       - docker push $ECR_REGISTRY/$IMAGE_NAME:latest
 
