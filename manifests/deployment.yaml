@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-html-app
+  labels:
+    app: my-html-app
+spec:
+  replicas: 2  # Number of pods
+  selector:
+    matchLabels:
+      app: my-html-app
+  template:
+    metadata:
+      labels:
+        app: my-html-app
+    spec:
+      containers:
+        - name: my-html-app
+          image: IMAGE_PLACEHOLDER  # This will be replaced by the buildspec.yaml
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "500m"
+            limits:
+              memory: "256Mi"
+              cpu: "1000m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-html-service
+spec:
+  type: LoadBalancer  # This makes it an external service
+  selector:
+    app: my-html-app
+  ports:
+    - protocol: TCP
+      port: 80  # Exposed port
+      targetPort: 80  # Port on the container
