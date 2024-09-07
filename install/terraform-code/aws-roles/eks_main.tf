@@ -1,10 +1,8 @@
-provider "aws" {
-  region = "us-east-1"  # Replace with your desired AWS region
-}
+# eks_main.tf
 
-# IAM Role for CodeBuild
-resource "aws_iam_role" "codebuild_role" {
-  name = "CodeBuildRole"
+# IAM Role for CodeBuild EKS
+resource "aws_iam_role" "codebuild_eks_role" {
+  name = "CodeBuildEKSRole"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -47,26 +45,14 @@ resource "aws_iam_policy" "codebuild_eks_policy" {
 
 # Attach EKS Policy to CodeBuild Role
 resource "aws_iam_role_policy_attachment" "codebuild_eks_policy_attachment" {
-  role       = aws_iam_role.codebuild_role.name
+  role       = aws_iam_role.codebuild_eks_role.name
   policy_arn  = aws_iam_policy.codebuild_eks_policy.arn
 }
 
-# IAM Role Policy Attachment for ECR Access
-resource "aws_iam_role_policy_attachment" "codebuild_ecr_policy_attachment" {
-  role       = aws_iam_role.codebuild_role.name
-  policy_arn  = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser"
-}
-
-# IAM Role Policy Attachment for CodePipeline Access
-resource "aws_iam_role_policy_attachment" "codebuild_codepipeline_policy_attachment" {
-  role       = aws_iam_role.codebuild_role.name
-  policy_arn  = "arn:aws:iam::aws:policy/AWSCodePipeline_FullAccess"
-}
-
 # Outputs
-output "codebuild_role_arn" {
-  description = "The ARN of the CodeBuild role"
-  value       = aws_iam_role.codebuild_role.arn
+output "codebuild_eks_role_arn" {
+  description = "The ARN of the CodeBuild role for EKS"
+  value       = aws_iam_role.codebuild_eks_role.arn
 }
 
 output "codebuild_eks_policy_arn" {
