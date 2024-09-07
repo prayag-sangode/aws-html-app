@@ -7,13 +7,13 @@ env:
     IMAGE_NAME: my-html-app
     APP_NAME: my-html-app
     CLUSTER_NAME: my-cluster
-    IMAGE_TAG: ${CODEBUILD_BUILD_ID}  # Use build ID as image tag
+    IMAGE_TAG: ${CODEBUILD_BUILD_NUMBER}  # Use build number as image tag
 
 phases:
   install:
     commands:
       - echo $IMAGE_TAG
-      - echo $CODEBUILD_BUILD_ID
+      - echo $CODEBUILD_BUILD_NUMBER
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
 
