@@ -72,8 +72,10 @@ pipeline {
     
                     // Update the deployment file with the new image tag
                     sh """
-                    sed -i 's#image: .*#image: ${ecrRepoUri}:${IMAGE_TAG}#' deployment.yaml
-                    sed -i "s#APP_NAME#${APP_NAME}#" deployment.yaml
+                    sed -i "s|{{IMAGE}}|${ECR_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}|g" deployment.yaml
+                    sed -i "s|{{APP_NAME}}|${APP_NAME}|g" deployment.yaml
+                    //sed -i 's#image: .*#image: ${ecrRepoUri}:${IMAGE_TAG}#' deployment.yaml
+                    //sed -i "s#APP_NAME#${APP_NAME}#" deployment.yaml
                     cat deployment.yaml
                     """
                 }
