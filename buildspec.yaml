@@ -7,7 +7,6 @@ env:
     IMAGE_NAME: my-html-app
     APP_NAME: my-html-app
     CLUSTER_NAME: my-cluster
-    # IMAGE_TAG removed from here to set it dynamically in commands
 
 phases:
   install:
