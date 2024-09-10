@@ -4,8 +4,8 @@ env:
   variables:
     AWS_REGION: us-east-1
     ECR_REGISTRY: 058264559032.dkr.ecr.us-east-1.amazonaws.com
-    IMAGE_NAME: my-html-app
-    APP_NAME: my-html-app
+    IMAGE_NAME: myhtml-app
+    APP_NAME: myhtml-app
     CLUSTER_NAME: my-cluster
 
 phases:
