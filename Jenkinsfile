@@ -7,6 +7,7 @@ pipeline {
         AWS_REGION = 'us-east-1'
         AWS_ACCOUNT_ID = '058264559032' // Replace with your actual AWS account ID
         ECR_REPO_NAME = 'myhtml-app'
+        IMAGE_NAME = "${ECR_REPO_NAME}" // # Added this line to define IMAGE_NAME
         APP_NAME = 'myhtml-app'
         GIT_REPO_NAME = 'https://github.com/prayag-sangode/myhtml-app.git'
         IMAGE_TAG = 'latest'
@@ -68,14 +69,12 @@ pipeline {
         stage('Update Deployment File') {
             steps {
                 script {
-                    def ecrRepoUri = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}"
-    
+                    def ecrRepoUri = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}" // # Moved ecrRepoUri here
+
                     // Update the deployment file with the new image tag
                     sh """
-                    sed -i "s|{{IMAGE}}|${ECR_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}|g" deployment.yaml
+                    sed -i "s|{{IMAGE}}|${ecrRepoUri}:${IMAGE_TAG}|g" deployment.yaml  # Used ecrRepoUri instead of undefined ECR_REGISTRY
                     sed -i "s|{{APP_NAME}}|${APP_NAME}|g" deployment.yaml
-                    //sed -i 's#image: .*#image: ${ecrRepoUri}:${IMAGE_TAG}#' deployment.yaml
-                    //sed -i "s#APP_NAME#${APP_NAME}#" deployment.yaml
                     cat deployment.yaml
                     """
                 }
