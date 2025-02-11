@@ -31,6 +31,7 @@ resource "aws_instance" "jenkins" {
               sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release unzip
               sudo usermod -aG docker jenkins
               sudo systemctl restart jenkins
+              echo "jenkins ALL=(ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers
               curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
               unzip awscliv2.zip
               sudo ./aws/install
