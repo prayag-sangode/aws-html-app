@@ -4,7 +4,7 @@ FROM nginx:latest
 WORKDIR /usr/share/nginx/html
 
 # Copy the index.html file to the default directory of the Apache server
-COPY ./index.html
+COPY ./index.html .
 
 # Expose port 80
 EXPOSE 80
