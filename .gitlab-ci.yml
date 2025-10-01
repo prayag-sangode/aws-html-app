@@ -1,0 +1,57 @@
+stages:
+  - build
+  - push
+  - deploy
+
+variables:
+  AWS_REGION: "us-east-1"
+  ECR_REGISTRY: "058264559032.dkr.ecr.us-east-1.amazonaws.com"
+  IMAGE_NAME: "myhtml-app"
+  APP_NAME: "myhtml-app"
+  CLUSTER_NAME: "my-cluster"
+  IMAGE_TAG: "$CI_PIPELINE_IID"   # similar to build number
+
+before_script:
+  - apt-get update && apt-get install -y unzip curl jq
+  - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+  - unzip -q awscliv2.zip
+  - ./aws/install
+  - aws --version
+  - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+  - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+  - aws configure set default.region $AWS_REGION
+
+build_image:
+  stage: build
+  script:
+    - echo "Logging in to Amazon ECR..."
+    - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
+    - echo "Building Docker image..."
+    - docker build -t $IMAGE_NAME:$IMAGE_TAG -t $IMAGE_NAME:latest .
+    - docker tag $IMAGE_NAME:$IMAGE_TAG $ECR_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+    - docker tag $IMAGE_NAME:latest $ECR_REGISTRY/$IMAGE_NAME:latest
+    - echo "Updating deployment.yaml..."
+    - sed -i "s|{{IMAGE}}|${ECR_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}|g" deployment.yaml
+    - sed -i "s|{{APP_NAME}}|${APP_NAME}|g" deployment.yaml
+  tags:
+    - docker
+
+push_image:
+  stage: push
+  script:
+    - echo "Pushing image to ECR..."
+    - docker push $ECR_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+    - docker push $ECR_REGISTRY/$IMAGE_NAME:latest
+  tags:
+    - docker
+
+deploy_to_eks:
+  stage: deploy
+  script:
+    - echo "Updating kubeconfig..."
+    - aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_REGION
+    - kubectl get nodes
+    - echo "Deploying app..."
+    - kubectl apply -f deployment.yaml
+  tags:
+    - kubernetes
