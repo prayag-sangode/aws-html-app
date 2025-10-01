@@ -1,0 +1,62 @@
+name: CI/CD to EKS
+
+on:
+  push:
+    branches:
+      - main1
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REGISTRY: 058264559032.dkr.ecr.us-east-1.amazonaws.com
+  IMAGE_NAME: myhtml-app
+  APP_NAME: myhtml-app
+  CLUSTER_NAME: my-cluster
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Set IMAGE_TAG from GitHub Run Number
+        run: echo "IMAGE_TAG=${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
+
+      - name: Login to Amazon ECR
+        run: |
+          aws ecr get-login-password --region $AWS_REGION \
+          | docker login --username AWS --password-stdin $ECR_REGISTRY
+
+      - name: Build Docker image
+        run: |
+          docker build -t $IMAGE_NAME:$IMAGE_TAG -t $IMAGE_NAME:latest .
+          docker tag $IMAGE_NAME:$IMAGE_TAG $ECR_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+          docker tag $IMAGE_NAME:latest $ECR_REGISTRY/$IMAGE_NAME:latest
+
+      - name: Update deployment.yaml
+        run: |
+          sed -i "s|{{IMAGE}}|${ECR_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}|g" deployment.yaml
+          sed -i "s|{{APP_NAME}}|${APP_NAME}|g" deployment.yaml
+
+      - name: Push Docker image to Amazon ECR
+        run: |
+          docker push $ECR_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$IMAGE_NAME:latest
+
+      - name: Update kubeconfig for EKS cluster
+        run: |
+          aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_REGION
+
+      - name: Verify EKS nodes
+        run: kubectl get nodes
+
+      - name: Deploy to EKS
+        run: kubectl apply -f deployment.yaml
