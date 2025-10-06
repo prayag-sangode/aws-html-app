@@ -3,7 +3,7 @@ name: CI/CD to EKS
 on:
   push:
     branches:
-      - main1
+      - main
 
 env:
   AWS_REGION: us-east-1
