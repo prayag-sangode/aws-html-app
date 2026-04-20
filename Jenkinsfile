@@ -12,6 +12,7 @@ pipeline {
         GIT_REPO_NAME = 'https://github.com/prayag-sangode/myhtml-app.git'
         IMAGE_TAG = 'latest'
         AWS_CREDENTIALS_ID = 'aws-id'
+        EKS_CLUSTER_NAME = 'my-eks-cluster'
     }
     
     stages {
@@ -86,7 +87,7 @@ pipeline {
                 script {
                     // Update kubeconfig for your EKS cluster using stored AWS credentials
                     withCredentials([aws(credentialsId: AWS_CREDENTIALS_ID, region: 'us-east-1')]) {
-                        sh 'aws eks update-kubeconfig --name my-cluster'
+                        sh 'aws eks update-kubeconfig --name ${EKS_CLUSTER_NAME}'
                         sh 'kubectl get nodes'
                         sh 'cat deployment.yaml'
                         sh 'kubectl apply -f deployment.yaml'
