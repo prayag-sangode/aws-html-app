@@ -5,10 +5,10 @@ pipeline {
     
     environment {
         AWS_REGION = 'us-east-1'
-        AWS_ACCOUNT_ID = '058264559032' // Replace with your actual AWS account ID
-        ECR_REPO_NAME = 'myhtml-app'
+        AWS_ACCOUNT_ID = '426063972414' // Replace with your actual AWS account ID
+        ECR_REPO_NAME = 'my-app-repo'
         IMAGE_NAME = "${ECR_REPO_NAME}" // # Added this line to define IMAGE_NAME
-        APP_NAME = 'myhtml-app'
+        APP_NAME = 'my-app'
         GIT_REPO_NAME = 'https://github.com/prayag-sangode/myhtml-app.git'
         IMAGE_TAG = 'latest'
         AWS_CREDENTIALS_ID = 'aws-id'
