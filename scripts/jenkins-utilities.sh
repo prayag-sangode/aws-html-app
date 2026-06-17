@@ -13,34 +13,52 @@ echo "Updating system packages..."
 sudo apt update -y
 
 ########################################
-# Install Java (OpenJDK 17)
+# Install Java (OpenJDK 21)
 # jenkins-install.sh
 ########################################
-echo "Installing OpenJDK 17..."
+echo "Installing OpenJDK 21..."
 sudo apt install -y openjdk-17-jdk
 java -version
 
 ########################################
 # Install Jenkins
 ########################################
-echo "Adding Jenkins repository..."
-curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | \
-  sudo tee /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+# Verify the Java installation
+java -version
 
-echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/" | \
-  sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
+curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2026.key | sudo tee \
+  /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
 
-echo "Installing Jenkins..."
-sudo apt update -y
+# Add the Jenkins Debian repository and the Jenkins key to your system
+# curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo tee \
+#  /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+
+#echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+#  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
+#  /etc/apt/sources.list.d/jenkins.list > /dev/null
+
+# Update the package index again
+sudo apt update
+
+# Install Jenkins
 sudo apt install -y jenkins
 
-echo "Starting and enabling Jenkins service..."
+# Start Jenkins
 sudo systemctl start jenkins
-sudo systemctl enable jenkins
-sudo systemctl status jenkins --no-pager
 
+# Enable Jenkins to start on boot
+sudo systemctl enable jenkins
+
+# Print the status of Jenkins
+sudo systemctl status jenkins
+
+# Print the initial admin password
 echo "Jenkins installed successfully."
-echo "Initial admin password:"
+echo "The initial admin password is located at /var/lib/jenkins/secrets/initialAdminPassword"
+
 sudo cat /var/lib/jenkins/secrets/initialAdminPassword || true
 
 ########################################
